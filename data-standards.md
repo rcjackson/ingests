@@ -1,6 +1,6 @@
 # CROCUS Data File Name Conventions
 
-{site}-{instrument}-{datalevel}-{datetime}.nc
+crocus-{site}-{instrument}-{datalevel}-{datetime}.nc
 
 ex.
 neiu-ceilometer-b1-20230602-000000.nc
