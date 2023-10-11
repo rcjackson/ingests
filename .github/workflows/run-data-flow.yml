@@ -10,7 +10,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    if: github.repository == 'CROCUS-Urban/instrument-cookbooks'
+    if: github.repository == 'CROCUS-Urban/ingests'
     defaults:
       run:
         shell: bash -l {0}
