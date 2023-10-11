@@ -1,0 +1,49 @@
+name: data-flow
+
+on:
+  schedule:
+    - cron: '5 * * * *' # run hourly
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    if: github.repository == 'CROCUS-Urban/instrument-cookbooks'
+    defaults:
+      run:
+        shell: bash -l {0}
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Setup miniconda environment
+        uses: conda-incubator/setup-miniconda@main
+        with:
+          channels: conda-forge
+          activate-environment: instrument-cookbooks-dev
+          environment-file: environment.yml
+          miniforge-variant: Mambaforge
+          use-mamba: true
+
+      - name: Verify environment installation
+        run: conda env list
+      
+      - name: Run the ambient weather api script
+        shell: bash -l {0}
+        env:
+          AMBIENT_API_KEY: '${{ secrets.AMBIENT_API_KEY }}'
+          AMBIENT_APPLICATION_KEY: '${{ secrets.AMBIENT_APPLICATION_KEY }}'
+          AMBIENT_ENDPOINT: '${{ secrets.AMBIENT_ENDPOINT }}'
+        run: |
+          cd scripts/ambient_weather/
+          python process_ambient_data.py
+      
+      - name: Commit new changes
+        uses: EndBug/add-and-commit@v9
+        with:
+          add: '-A'
+          default_author: github_actions
+          message: '[skip ci] Hourly data updates'
