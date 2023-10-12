@@ -72,6 +72,7 @@ for device in devices:
         if not os.path.exists(full_path.parent):
             os.makedirs(full_path.parent)
         ds.to_netcdf(full_path)
-    except:
+    except Error as e:
+        print(e)
         pass
     time.sleep(20)
