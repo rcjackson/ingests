@@ -35,7 +35,7 @@ def process_station(device, attrs=attrs_dict, variable_mapping=variable_mapping)
     df = pd.DataFrame(data)
     
     # Format the times properly
-    df['date'] = pd.to_datetime(df.date).astype('datetime64[ns]')
+    df['date'] = pd.DatetimeIndex(pd.to_datetime(df.date)).tz_convert('UTC').tz_localize(None).astype('datetime64[ns]')
 
     # Sort the values and set the index to be the date
     df = df.sort_values('date')
