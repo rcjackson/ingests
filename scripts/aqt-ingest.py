@@ -8,6 +8,7 @@ import numpy as np
 import datetime
 import xarray as xr
 import os
+from datetime import datetime, timedelta
 
 from matplotlib.dates import DateFormatter
 
@@ -47,7 +48,7 @@ var_attrs_aqt = {'pm2.5' : {'standard_name' : 'mole_concentration_of_pm2p5_ambie
 def ingest_aqt(st, global_attrs, var_attrs):
     hours = 24
     start = st.strftime('%Y-%m-%dT%H:%M:%SZ')
-    end = (st + datetime.timedelta(hours=hours)).strftime('%Y-%m-%dT%H:%M:%SZ')
+    end = (st + timedelta(hours=hours)).strftime('%Y-%m-%dT%H:%M:%SZ')
 
     df_aq = sage_data_client.query(
         start=start,
@@ -98,7 +99,7 @@ def ingest_aqt(st, global_attrs, var_attrs):
     _ = aqvals.pop('timestamp')
     
     
-    fname = st.strftime('/data/datastream/neiu/neiu-aqt-a1/neiu-aqt-a1-%Y%m%d-%H%M%S.nc')
+    fname = st.strftime('/data/datastream/neiu/neiu-aqt-a1/crocus-neiu-aqt-a1-%Y%m%d-%H%M%S.nc')
     valsxr = xr.Dataset.from_dataframe(aqvals)
     valsxr = valsxr.sortby('time')
     
@@ -113,6 +114,9 @@ def ingest_aqt(st, global_attrs, var_attrs):
     except OSError:
         pass
     
+    # Ensure time is saved properly
+    valsxr["time"] = pd.to_datetime(valsxr.time)
+
     if valsxr['pm2.5'].shape[0] > 0:
         valsxr.to_netcdf(fname, format='NETCDF4')
     else:
@@ -120,12 +124,14 @@ def ingest_aqt(st, global_attrs, var_attrs):
     
     #return valsxr
 
-start_date = datetime.datetime(2023,5,5)
-for i in range(45):
-    this_date = start_date + datetime.timedelta(days=i)
+lag_time = timedelta(days=3)
+start_date = datetime.utcnow() - lag_time
+start_date = datetime(start_date.year, start_date.month, start_date.day)
+for i in range(4):
+    this_date = start_date + timedelta(days=i)
     print(this_date)
     try:
         ingest_aqt(this_date, aqt_global_NEIU, var_attrs_aqt)
         print("Succeed")
-    except:
-        print("Fail")
+    except Exception as e:
+        print(e)
