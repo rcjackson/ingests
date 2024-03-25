@@ -40,7 +40,16 @@ if __name__ == "__main__":
     temp_file_list = []
     for f in file_list:
         name = f[-18:].replace("_", "-")
-        out_name = '/data/datastream/neiu/neiu-mrrpro-a1/%s-%s-%s-%s' % (site, instrument, level, name)
+        out_dir = '/nfs/gce/projects/crocus/data/early_in_project_ingested_data/neiu-mrrpro/'
+        year = name[:4]
+        month = name[4:6]
+        day = name[6:8]
+        out_dir = os.path.join(out_dir, '%s%s' % (year, month))
+        out_dir = os.path.join(out_dir, '%s%s%s' % (year, month, day))
+        out_name = '%s-%s-%s-%s' % (site, instrument, level, name)
+        if not os.path.exists(out_dir):
+            os.makedirs(out_dir)
+        out_name = os.path.join(out_dir, out_name)
         if not os.path.exists(out_name):
             print(f)
             readtofile(f, out_name, username, password)
