@@ -1,18 +1,18 @@
 import sage_data_client
-import matplotlib.pyplot as plt
 import pandas as pd
-from metpy.calc import dewpoint_from_relative_humidity, wet_bulb_temperature
+from metpy.calc import dewpoint_from_relative_humidity
 from metpy.units import units
-from PIL import Image
-import numpy as np
 import datetime
 import xarray as xr
 import os
-from datetime import datetime, timedelta
+from datetime import timedelta
 
-from matplotlib.dates import DateFormatter
+# remove error warning for not assigning varables to initial
+# dataframe
+pd.options.mode.chained_assignment = None  # default='warn'
 
 outdir = "/nfs/gce/projects/crocus/data/ingested-data/neiu-aqt-a1"
+
 aqt_global_NEIU = {'conventions': "CF 1.10",
                    'site_ID' : "NEIU",
                   'CAMS_tag' : "CMS-AQT-001",
@@ -51,6 +51,8 @@ def ingest_aqt(st, global_attrs, var_attrs):
     start = st.strftime('%Y-%m-%dT%H:%M:%SZ')
     end = (st + timedelta(hours=hours)).strftime('%Y-%m-%dT%H:%M:%SZ')
 
+    # Query the SAGE Data Client 
+    # Note - specific plugin version can change
     df_aq = sage_data_client.query(
         start=start,
         end=end, 
@@ -59,11 +61,11 @@ def ingest_aqt(st, global_attrs, var_attrs):
             "vsn": "W08D"
         }
     )
-
+   
+    # Rename specific column names
     pm25 = df_aq[df_aq['name']=='aqt.particle.pm2.5']
     pm10 = df_aq[df_aq['name']=='aqt.particle.pm1']
     pm100 = df_aq[df_aq['name']=='aqt.particle.pm10']
-
     no = df_aq[df_aq['name']=='aqt.gas.no']
     o3 = df_aq[df_aq['name']=='aqt.gas.ozone']
     no2 = df_aq[df_aq['name']=='aqt.gas.no2']
@@ -72,11 +74,14 @@ def ingest_aqt(st, global_attrs, var_attrs):
     aqhum = df_aq[df_aq['name']=='aqt.env.humidity']
     aqpres = df_aq[df_aq['name']=='aqt.env.pressure']
 
+    # Convert instrument timestamp to Pandas Datatime object
+    pm25['time'] = pd.DatetimeIndex(pm25['timestamp'].values)
 
-    pm25['time'] = pd.DatetimeIndex(pm25['timestamp'])
+    # Remove all meta data descriptions besides the index
+    aqvals = pm25.loc[:, pm25.columns.intersection(["time"])]
 
-    aqvals = pm25.set_index('time')
-    aqvals['pm2.5'] = aqvals.value.to_numpy().astype(float)
+    # Add all parameter to the output dataframe
+    aqvals['pm2.5'] = pm25.value.to_numpy().astype(float)
     aqvals['pm1.0'] = pm10.value.to_numpy().astype(float)
     aqvals['pm10.0'] = pm100.value.to_numpy().astype(float)
 
@@ -87,33 +92,37 @@ def ingest_aqt(st, global_attrs, var_attrs):
     aqvals['temperature'] =  aqtemp.value.to_numpy().astype(float)
     aqvals['humidity'] =  aqhum.value.to_numpy().astype(float)
     aqvals['pressure'] =  aqpres.value.to_numpy().astype(float)
-    
-    
 
-
-    dp = dewpoint_from_relative_humidity( aqvals.temperature.to_numpy() * units.degC, 
-                                         aqvals.humidity.to_numpy() * units.percent)
-
+    # calculate dewpoint from relative humidity
+    dp = dewpoint_from_relative_humidity(aqvals.temperature.to_numpy() * units.degC, 
+                                         aqvals.humidity.to_numpy() * units.percent
+    )
     aqvals['dewpoint'] = dp
-
-    _ = aqvals.pop('value')
-    _ = aqvals.pop('timestamp')
     
+    # Define the index
+    aqvals = aqvals.set_index("time")
     
     fname = st.strftime(f'{outdir}/crocus-neiu-aqt-a1-%Y%m%d-%H%M%S.nc')
     valsxr = xr.Dataset.from_dataframe(aqvals)
     valsxr = valsxr.sortby('time')
     
-    
+    # Assign the global attributes
     valsxr = valsxr.assign_attrs(global_attrs)
-    
+    # Assign the individual parameter attributes
     for varname in var_attrs.keys():
         valsxr[varname] = valsxr[varname].assign_attrs(var_attrs[varname])
-    
+    # Check if file exists and remove if necessary
     try:
         os.remove(fname)
     except OSError:
         pass
+    
+    # ---------
+    # Apply QC
+    #----------
+    # Check for aerosol water vapor uptake and mask out
+    cond = (0 < valsxr.humidity) & (valsxr.humidity < 98)
+    valsxr = valsxr.where(cond, drop=False) 
     
     # Ensure time is saved properly
     valsxr["time"] = pd.to_datetime(valsxr.time)
@@ -122,13 +131,11 @@ def ingest_aqt(st, global_attrs, var_attrs):
         valsxr.to_netcdf(fname, format='NETCDF4')
     else:
         print('not saving... no data')
-    
-    #return valsxr
 
-lag_time = timedelta(days=305)
-start_date = datetime.utcnow() - lag_time
-start_date = datetime(start_date.year, start_date.month, start_date.day)
-for i in range(306):
+lag_time = timedelta(days=1)
+start_date = datetime.datetime.now(datetime.UTC) - lag_time
+start_date = datetime.datetime(start_date.year, start_date.month, start_date.day)
+for i in range(1):
     this_date = start_date + timedelta(days=i)
     print(this_date)
     try:
