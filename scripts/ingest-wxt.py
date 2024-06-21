@@ -106,13 +106,13 @@ def ingest_wxt(st, global_attrs, var_attrs, odir='/Users/scollis/data/wxt/' ):
     windy['direction'] = direction.value.to_numpy()[0:minsamps]
 
 
-    winds10mean = windy.resample('10S').mean(numeric_only=True).ffill()
-    winds10max = windy.resample('10S').max(numeric_only=True).ffill()
+    winds10mean = windy.resample('10s').mean(numeric_only=True).ffill()
+    winds10max = windy.resample('10s').max(numeric_only=True).ffill()
     dp = dewpoint_from_relative_humidity( vals.temperature.to_numpy() * units.degC, 
                                          vals.humidity.to_numpy() * units.percent)
 
     vals['dewpoint'] = dp
-    vals10 = vals.resample('10S').mean(numeric_only=True).ffill() #ffil gets rid of nans due to empty resample periods
+    vals10 = vals.resample('10s').mean(numeric_only=True).ffill() #ffil gets rid of nans due to empty resample periods
     wb = wet_bulb_temperature(vals10.pressure.to_numpy() * units.hPa,
                               vals10.temperature.to_numpy() * units.degC,
                               vals10.dewpoint.to_numpy() * units.degC)
@@ -123,8 +123,8 @@ def ingest_wxt(st, global_attrs, var_attrs, odir='/Users/scollis/data/wxt/' ):
     vals10['wind_max_10s'] = winds10max['speed']
     _ = vals10.pop('value')
     
-    end_fname = st.strftime('_%Y%m%d_%H%M%SZ.nc')
-    start_fname = odir + '/CMS_wxt536_' + global_attrs['site_ID'] + '_' + global_attrs['datalevel']
+    end_fname = st.strftime('_%Y%m%d_%H%M%S.nc')
+    start_fname = odir + '/crocus-' + global_attrs['site_ID'] + '-' + 'wxt-'+ global_attrs['datalevel']
     fname = start_fname + end_fname
     
     try:
@@ -236,6 +236,6 @@ if __name__ == '__main__':
         try:
             ingest_wxt(this_date,  site_args, var_attrs_wxt, odir=args.odir)
             print("Succeed")
-        except:
-            print("Fail")
+        except Exception as e:
+            print("Fail", e)
     
