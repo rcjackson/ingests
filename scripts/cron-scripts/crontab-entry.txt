@@ -1,0 +1,10 @@
+SHELL=/bin/bash
+BASH_ENV=~/.bashrc_conda
+
+# Process WXT data every hour
+0 * * * * conda activate ingests-dev; python /home/mgrover/git-repos/ingests/scripts/ingest-wxt.py 1 %y %m %d NU
+0 * * * * conda activate ingests-dev; python /home/mgrover/git-repos/ingests/scripts/ingest-wxt.py 1 %y %m %d NEIU
+
+# Process AQT data every hour
+0 * * * * conda activate ingests-dev; python /home/mgrover/git-repos/ingests/scripts/ingest-aqt.py 1 %y %m %d NU
+0 * * * * conda activate ingests-dev; python /home/mgrover/git-repos/ingests/scripts/ingest-aqt.py 1 %y %m %d NEIU
