@@ -1,0 +1,6 @@
+SHELL=/bin/bash
+BASH_ENV=~/.bashrc_conda
+
+0 * * * * conda activate ingests-dev; python /home/waggle/mgrover/git-repos/ingests/scripts/neiu/ceilometer-make-daily.py --input /home/waggle/mgrover/fixed-cl61 --output /home/waggle/mgrover/fixed-cl61 --start %y-%m-%d --end %y-%m-%d
+
+30 * * * * conda activate ingests-dev; python /home/waggle/mgrover/git-repos/ingests/scripts/neiu/ceilometer-make-daily.py --input /home/waggle/mgrover/fixed-cl61 --output /home/waggle/mgrover/fixed-cl61 --start %y-%m-%d --end %y-%m-%d
