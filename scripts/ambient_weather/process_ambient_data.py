@@ -1,6 +1,6 @@
 from ambient_api.ambientapi import AmbientAPI
 import numpy as np
-from datetime import datetime
+from datetime import datetime, timezone
 import time
 import pandas as pd
 import xarray as xr
@@ -25,7 +25,7 @@ variable_mapping = {'tempf':'outdoor_temperature',
 
 def process_station(device, attrs=attrs_dict, variable_mapping=variable_mapping):
     
-    current_date = datetime.utcnow()
+    current_date = datetime.now(timezone.utc)
     # Read in the station data
     data = device.get_data(end_date = current_date)
     
