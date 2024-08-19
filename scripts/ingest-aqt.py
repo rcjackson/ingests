@@ -7,6 +7,7 @@ Usage:
 
 Author:
     Scott Collis - 5.9.2024
+    Max Grover - 8.19.2024
 """
 
 import sage_data_client
