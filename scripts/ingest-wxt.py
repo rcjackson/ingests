@@ -230,22 +230,22 @@ if __name__ == '__main__':
     current = datetime.datetime.utcnow()
     parser = argparse.ArgumentParser(description='Optional app description')
     
-    parser.add_argument('ndays', type=int, default=1,
+    parser.add_argument('--ndays', type=int, default=1,
                     help='number of days to ingest')
     
-    parser.add_argument('y', type=int, default=current.year,
+    parser.add_argument('--y', type=int, default=current.year,
                     help='Year start')
     
-    parser.add_argument('m', type=int, default=current.month,
+    parser.add_argument('--m', type=int, default=current.month,
                     help='Month start')
     
-    parser.add_argument('d', type=int, default=current.day,
+    parser.add_argument('--d', type=int, default=current.day,
                     help='day start')
     
-    parser.add_argument('site', type=str, default="NEIU",
+    parser.add_argument('--site', type=str, default="NEIU",
                     help='CROCUS Site')
 
-    parser.add_argument('odir', type=str,
+    parser.add_argument('--odir', type=str,
                     help='Out directory (must exist)')
 
     args = parser.parse_args()
