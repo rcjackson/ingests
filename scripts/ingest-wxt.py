@@ -5,6 +5,7 @@ Usage:
 
 Author:
     Scott Collis - 5.9.2024
+    Max Grover - 8.19.2024
 """
 
 import sage_data_client
@@ -145,42 +146,64 @@ def ingest_wxt(st, global_attrs, var_attrs, odir='/Users/scollis/data/wxt/' ):
 if __name__ == '__main__':
     
     # Site attributes
-    
+
     wxt_global_NEIU = {'conventions': "CF 1.10",
                        'site_ID' : "NEIU",
-                      'CAMS_tag' : "CMS-WXT-002",
-                      'datastream' : "CMS_wxt536_NEIU_a1",
-                      'datalevel' : "a1",
-                       "plugin" : "registry.sagecontinuum.org/jrobrien/waggle-wxt536:0.*",
+                       'CAMS_tag' : "CMS-WXT-002",
+                       'datastream' : "CMS_wxt536_NEIU_a1",
+                       'datalevel' : "a1",
+                       'plugin' : "registry.sagecontinuum.org/jrobrien/waggle-wxt536:0.*",
                        'WSN' : 'W08D',
-                      'latitude' : 41.9804526,
-                      'longitude' : -87.7196038}
-    
+                       'latitude' : 41.9804526,
+                       'longitude' : -87.7196038}
+
     wxt_global_NU = {'conventions': "CF 1.10",
-                      'WSN':'W099',
-                       'site_ID' : "NU",
-                      'CAMS_tag' : "CMS-WXT-005",
-                      'datastream' : "CMS_wxt536_NU_a1",
-                      'plugin' : "registry.sagecontinuum.org/jrobrien/waggle-wxt536:0.*",
-                      'datalevel' : "a1",
-                      'latitude' : 42.051469749,
-                      'longitude' : -87.677667183}
-    
+                     'WSN':'W099',
+                     'site_ID' : "NU",
+                     'CAMS_tag' : "CMS-WXT-005",
+                     'datastream' : "CMS_wxt536_NU_a1",
+                     'plugin' : "registry.sagecontinuum.org/jrobrien/waggle-wxt536:0.*",
+                     'datalevel' : "a1",
+                     'latitude' : 42.051469749,
+                     'longitude' : -87.677667183}
+
     wxt_global_CSU = {'conventions': "CF 1.10",
                       'WSN':'W08E',
-                       'site_ID' : "CSU",
+                      'site_ID' : "CSU",
                       'CAMS_tag' : "CMS-WXT-003",
                       'datastream' : "CMS_wxt536_CSU_a1",
-                      'plugin' : "registry.sagecontinuum.org/jrobrien/waggle-wxt536:0.*",
+                      'plugin' : "local/waggle-wxt536",
                       'datalevel' : "a1",
-                      'latitude' : 41.71991216,
-                      'longitude' : -87.612834722}
+                      'latitude' : 41.71996846,
+                      'longitude' : -87.612805717}
+
+    wxt_global_ATMOS = {'conventions': "CF 1.10",
+                        'WSN':'W0A4',
+                        'site_ID' : "ATMOS",
+                        'CAMS_tag' : "CMS-WXT-001",
+                        'datastream' : "CMS_wxt536_ATMOS_a1",
+                        'plugin' : "registry.sagecontinuum.org/jrobrien/waggle-wxt536:0.*",
+                        'datalevel' : "a1",
+                        'latitude' : 41.7016264,
+                        'longitude' : -87.9956515}
+
+    wxt_global_UIC = {'conventions': "CF 1.10",
+                      'WSN':'W096',
+                      'site_ID' : "UIC",
+                      'CAMS_tag' : "CMS-WXT-011",
+                      'datastream' : "CMS_wxt536_UIC_a1",
+                      'plugin' : "10.31.81.1:5000/local/waggle-wxt536.*",
+                      'datalevel' : "a1",
+                      'latitude' : 41.869407936,
+                      'longitude' : -87.645806251}
     
     #put these in a dictionary for accessing
     
     global_sites = {'NU' : wxt_global_NU, 
                     'CSU': wxt_global_CSU,
-                    'NEIU' : wxt_global_NEIU}
+                    'NEIU' : wxt_global_NEIU,
+                    'CSU': wxt_global_CSU,
+                    'UIC': wxt_global_UIC}
     
     
     #Variable attributes
