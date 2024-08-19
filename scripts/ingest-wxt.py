@@ -202,7 +202,7 @@ if __name__ == '__main__':
     global_sites = {'NU' : wxt_global_NU, 
                     'CSU': wxt_global_CSU,
                     'NEIU' : wxt_global_NEIU,
-                    'CSU': wxt_global_CSU,
+                    'ATMOS': wxt_global_ATMOS,
                     'UIC': wxt_global_UIC}
     
     
