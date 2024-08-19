@@ -137,41 +137,63 @@ if __name__ == '__main__':
     
     # Site attributes
     
-    wxt_global_NEIU = {'conventions': "CF 1.10",
+    aqt_global_NEIU = {'conventions': "CF 1.10",
                        'site_ID' : "NEIU",
-                      'CAMS_tag' : "CMS-WXT-002",
-                      'datastream' : "CMS_wxt536_NEIU_a1",
+                      'CAMS_tag' : "CMS-WXT-004",
+                      'datastream' : "crocus_neiu_aqt_a1",
                       'datalevel' : "a1",
                        "plugin" : "registry.sagecontinuum.org/jrobrien/waggle-aqt:0.23.5.04",
                        'WSN' : 'W08D',
                       'latitude' : 41.9804526,
                       'longitude' : -87.7196038}
     
-    wxt_global_NU = {'conventions': "CF 1.10",
+    aqt_global_NU = {'conventions': "CF 1.10",
                       'WSN':'W099',
-                       'site_ID' : "NU",
+                      'site_ID' : "NU",
                       'CAMS_tag' : "CMS-WXT-005",
-                      'datastream' : "CMS_wxt536_NU_a1",
+                      'datastream' : "crocus_nu_aqt_a1",
                       'plugin' : "registry.sagecontinuum.org/jrobrien/waggle-aqt:0.23.5.04",
                       'datalevel' : "a1",
                       'latitude' : 42.051469749,
                       'longitude' : -87.677667183}
     
-    wxt_global_CSU = {'conventions': "CF 1.10",
+    aqt_global_CSU = {'conventions': "CF 1.10",
                       'WSN':'W08E',
                        'site_ID' : "CSU",
-                      'CAMS_tag' : "CMS-WXT-003",
-                      'datastream' : "CMS_wxt536_CSU_a1",
+                      'CAMS_tag' : "CMS-AQT-002",
+                      'datastream' : "crocus_csu_aqt_a1",
                       'plugin' : "registry.sagecontinuum.org/jrobrien/waggle-aqt:0.23.5.04",
                       'datalevel' : "a1",
                       'latitude' : 41.71991216,
                       'longitude' : -87.612834722}
     
+    aqt_global_ATMOS = {'conventions': "CF 1.10",
+                        'WSN':'W0A4',
+                        'site_ID' : "ATMOS",
+                        'CAMS_tag' : "CMS-AQT-001",
+                        'datastream' : "crocus_atmos_aqt_a1",
+                        'plugin' : "registry.sagecontinuum.org/jrobrien/waggle-aqt:0.23.5.04",
+                        'datalevel' : "a1",
+                        'latitude' : 41.7016264,
+                        'longitude' : -87.9956515}
+
+    aqt_global_UIC = {'conventions': "CF 1.10",
+                      'WSN':'W096',
+                      'site_ID' : "UIC",
+                      'CAMS_tag' : "CMS-WXT-011",
+                      'datastream' : "crocus_uic_aqt_a1",
+                      'plugin' : "10.31.81.1:5000/local/waggle-aqt:0.23.5.04",
+                      'datalevel' : "a1",
+                      'latitude' : 41.869407936,
+                      'longitude' : -87.645806251}
+    
     #put these in a dictionary for accessing
     
-    global_sites = {'NU' : wxt_global_NU, 
-                    'CSU': wxt_global_CSU,
-                    'NEIU' : wxt_global_NEIU}
+    global_sites = {'NU' : aqt_global_NU, 
+                    'CSU': aqt_global_CSU,
+                    'NEIU' : aqt_global_NEIU,
+                    'ATMOS': aqt_global_ATMOS,
+                    'UIC': aqt_global_UIC}
     
     
     #Variable attributes
