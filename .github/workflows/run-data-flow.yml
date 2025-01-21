@@ -42,6 +42,16 @@ jobs:
           cd scripts/ambient_weather/
           python process_ambient_data.py
       
+      - name: Run the ambient weather api for DPI script
+        shell: bash -l {0}
+        env:
+          AMBIENT_API_KEY: '${{ secrets.DPI_API_KEY }}'
+          AMBIENT_APPLICATION_KEY: '${{ secrets.DPI_APPLICATION_KEY }}'
+          AMBIENT_ENDPOINT: '${{ secrets.AMBIENT_ENDPOINT }}'
+        run: |
+          cd scripts/ambient_weather/
+          python process_ambient_data.py
+      
       - name: Commit new changes
         uses: EndBug/add-and-commit@v9
         with:
