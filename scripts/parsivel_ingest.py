@@ -40,6 +40,9 @@ def process_parsivel(fi, radar_frequency=None):
     out_ds["Nd"] = (['time', 'bins'], my_dsd.Nd["data"])
     out_ds["Nd"].attrs = my_dsd.Nd
     del out_ds["Nd"].attrs["data"]
+    out_ds["rain_rate"] = (['time'], my_dsd.rain_rate["data"])
+    del my_dsd.rain_rate["data"]
+    out_ds["rain_rate"].attrs = my_dsd.rain_rate
     if radar_frequency is not None:
         my_dsd.set_scattering_temperature_and_frequency(scattering_freq=24e6)
         my_dsd.calculate_radar_parameters()
