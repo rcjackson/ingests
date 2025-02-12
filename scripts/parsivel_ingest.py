@@ -29,7 +29,6 @@ def process_parsivel(fi, radar_frequency=None):
     # W-band is 95 Ghz
     
     my_dsd.Nd["data"] = my_dsd.Nd["data"].filled(0)
-    params_list = ["Zh", "Zdr", "delta_co", "Kdp", "Ai", "Adr", "D0", "Dmax", "Dm", "Nt", "Nw", "N0", "W", "mu", "Lambda"]
     
     my_dsd.calculate_dsd_parameterization()
     out_ds = xr.Dataset()
@@ -37,9 +36,16 @@ def process_parsivel(fi, radar_frequency=None):
     out_ds["bin_edges"] = ('bin_edges', my_dsd.bin_edges["data"])
     out_ds["bin_edges"].attrs = my_dsd.bin_edges
     del out_ds["bin_edges"].attrs["data"]
+    
     out_ds["Nd"] = (['time', 'bins'], my_dsd.Nd["data"])
     out_ds["Nd"].attrs = my_dsd.Nd
     del out_ds["Nd"].attrs["data"]
+    out_ds["num_particles"] = (['time'], my_dsd.num_particles["data"])
+    out_ds["num_particles"].attrs = my_dsd.num_particles
+    del out_ds["num_particles"].attrs["data"]
+    out_ds["velocity"] = (['time', 'bins'], my_dsd.velocity["data"])
+    out_ds["velocity"].attrs = my_dsd.velocity
+    del out_ds["velocity"].attrs["data"] 
     out_ds["rain_rate"] = (['time'], my_dsd.rain_rate["data"])
     del my_dsd.rain_rate["data"]
     out_ds["rain_rate"].attrs = my_dsd.rain_rate
@@ -47,13 +53,17 @@ def process_parsivel(fi, radar_frequency=None):
         my_dsd.set_scattering_temperature_and_frequency(scattering_freq=24e6)
         my_dsd.calculate_radar_parameters()
         print("Scattering done")
-        params_list = ["Zh", "Zdr", "delta_co", "Kdp", "Ai", "Adr", "D0", "Dmax", "Dm", "Nt", "Nw", "N0", "W", "mu", "Lambda"]
+        params_list = ["Zh", "Zdr", "delta_co", "Kdp", "Ai", "Adr", "D0", "Dmax", "Dm", "Nt", "Nw", "N0", "W", "mu", "Lambda",
+                       "sensor_status", "error_code", "num_particles_validated", "power_supply_voltage", "sensor_head_heating_current",
+                       "sensor_heating_temperature", "temperature_right_head", "temperature_left_head", "sensor_time"]
         for param in params_list:
             out_ds[param] = (['time'], my_dsd.fields[param]["data"])
             out_ds[param].attrs = my_dsd.fields[param]
             del out_ds[param].attrs["data"]
     else:
-        params_list = ["D0", "Dmax", "Dm", "Nt", "Nw", "N0", "W", "mu", "Lambda"]
+        params_list = ["D0", "Dmax", "Dm", "Nt", "Nw", "N0", "W", "mu", "Lambda",
+                       "sensor_status", "error_code", "num_particles_validated", "power_supply_voltage", "sensor_head_heating_current",
+                       "sensor_heating_temperature", "temperature_right_head", "temperature_left_head", "sensor_time"]
         for param in params_list:
             out_ds[param] = (['time'], my_dsd.fields[param]["data"])
             out_ds[param].attrs = my_dsd.fields[param]
@@ -85,9 +95,13 @@ if __name__ == "__main__":
         data_level = "a1"
     else:
         data_level = "b1"
-    init_time = datetime.fromtimestamp(out_ds.time.values[0])
+    
+    ts = (out_ds.time.values[0] - np.datetime64('1970-01-01T00:00:00Z')) / np.timedelta64(1, 's')
+    init_time = datetime.fromtimestamp(ts)
     out_ds["time"] = out_ds["time"].astype("datetime64[s]")
     file_date = init_time.strftime('%Y%m%d.%H%M%S')
+    del out_ds["sensor_time"].attrs["units"]
+    
     out_file = os.path.join(args.output_path, f'ADM.parsivel.{file_date}.{data_level}.nc')
     out_ds.to_netcdf(out_file)
 

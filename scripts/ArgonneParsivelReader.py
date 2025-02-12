@@ -1,11 +1,13 @@
 import numpy as np
+import pytz
 
 from datetime import datetime, timedelta
 from pydsd.DropSizeDistribution import DropSizeDistribution
 
-record_format = {"13": 6, "21": 10, "20": 8, "18": 1, "25": 3, "17": 4, "16": 4, 
-                 "27": 3, "28": 3, "12": 3, "01": 8, "02": 7, "07": 6,
-                 "11": 5, "60": 8, "90": 223, "91": 223, "93": 4095}
+#record_format = {"13": 6, "21": 10, "20": 8, "18": 1, "25": 3, "17": 4, "16": 4, 
+#                 "27": 3, "28": 3, "12": 3, "01": 8, "02": 7, "07": 6,
+#                 "11": 5, "60": 8, "90": 223, "91": 223, "93": 4095}
+
 
 def read_adm_parsivel(filename):
     """
@@ -47,6 +49,8 @@ class ArgonneParsivelReader(object):
         self.rain_rate = []
         self.Z = []
         self.num_particles = []
+        self.num_particles_validated = []
+        self.rain_accumulation = []
         self._base_time = []
 
         self.nd = []
@@ -54,9 +58,19 @@ class ArgonneParsivelReader(object):
         self.raw = []
         self.code = []
         self.time = []
-
+        self.sensor_serial_num = []
+        self.sensor_time = []
+        
+        self.sensor_status = []
+        self.error_code = []
+        self.power_supply_voltage = []
+        self.sensor_head_heating_current = []
+        self.temperature_right_head = []
+        self.temperature_left_head = []
+        self.sensor_heating_temperature = []
+        
         self.ndt = []
-
+        
         self.pcm = np.reshape(self.pcm_matrix, (32, 32))
 
         self._read_file()
@@ -73,48 +87,43 @@ class ArgonneParsivelReader(object):
         self._apply_pcm_matrix()
     
     def _read_file(self):
+        #Timestamp (UTC);	Sensor Serial Num (%13);	Sensor Date (%21);	Sensor Time (%20);	Sensor Status (%18);	Error Code    (%25);	Power #Supply Voltage (%17);	Sensor Head Heating Current (%16);	Temperature in the right sensor head (%27);	Temperature in the left sensor #head (%28);	Sensor Heating Temperature (%12);	Rain Intensity (%01);	Rain Amount Accumulated (%02);	Radar Reflectivity (%07);	#Number of Particles Validated (%11);	Number of Particles Detected (%60);	N(d) (%90);	v(d) (%91);	Raw Data (%93)
+
+         
         with open(self.filename) as f:
+            line1 = f.readline()
+            line2 = f.readline()
             for file_line in f:
+                
                 if file_line == "":
                     continue
-                pos = 0
-                key_no = 0
-                
-                while pos < len(file_line) - 1:
-                    code = list(record_format.keys())[key_no]
-                    num_chars = record_format[code]
-                    data = file_line[pos:pos+num_chars]
-                    pos = pos + num_chars + 1
-                    key_no = key_no + 1
-                    
-                    if code == "01":  # Rain Rate
-                        self.rain_rate.append(float(data))
-                    elif code == "07":  # Reflectivity
-                        self.Z.append(float(data))
-                    elif code == "11":  # Num Particles
-                        self.num_particles.append(int(data))
-                    elif code == "20":  # Time string
-                        self.time.append(self.get_sec(data.split(":")))
-                    elif code == "21":  # Date string
-                        date_tuple = data.split(".")
-                        self._base_time.append(
-                            datetime(
-                                year=int(date_tuple[2]),
-                                month=int(date_tuple[1]),
-                                day=int(date_tuple[0]),
-                            )
-                        )
-                    elif code == "90":  # Nd
-                        self.nd.append(
-                            np.power(10, list(map(float, data.split(";"))))
-                        )
-                    elif code == "91":  # Vd
-                        self.vd.append(
-                            list(map(float, data.split(";")))
-                        )
-                    elif code == "93":  # md
-                        self.raw.append(list(map(int, data.split(";"))))
-
+                split_string = file_line.split(";")
+                self.time.append(np.datetime64(split_string[0]))
+                self.sensor_serial_num = int(split_string[1])
+                sensor_date = split_string[2]
+                sensor_date = datetime.strptime(sensor_date, '%d.%m.%Y').strftime("%Y-%m-%d")
+                sensor_time = split_string[3]
+                self.sensor_time.append(np.datetime64(f"{sensor_date}T{sensor_time}"))
+                self.sensor_status.append(int(split_string[4]))
+                self.error_code.append(int(split_string[5]))
+                self.power_supply_voltage.append(float(split_string[6]))
+                self.sensor_head_heating_current.append(float(split_string[7]))
+                self.temperature_right_head.append(int(split_string[8]))
+                self.temperature_left_head.append(int(split_string[9]))
+                self.sensor_heating_temperature.append(int(split_string[10]))
+                self.rain_rate.append(float(split_string[11]))
+                self.rain_accumulation.append(float(split_string[12]))
+                self.Z.append(float(split_string[13]))
+                self.num_particles_validated.append(int(split_string[14]))
+                self.num_particles.append(int(split_string[15]))
+                nd_array = [float(x) for x in split_string[16:48]]
+                self.nd.append(nd_array)
+                vd_array = [float(x) for x in split_string[48:80]]
+                self.vd.append(vd_array)
+                raw_array = [float(x) for x in split_string[80:1104]]
+                self.raw.append(raw_array)
+              
+                         
     def get_sec(self, s):
         return int(s[0]) * 3600 + int(s[1]) * 60 + int(s[2])
     
@@ -130,7 +139,14 @@ class ArgonneParsivelReader(object):
             self.filtered_raw_matrix[i] = np.multiply(
                 self.pcm, np.reshape(self.raw[i], (32, 32))
             )
-
+        self.fields["filtered_raw_matrix"] = var_to_dict(
+            "Filtered raw counts using Tokay method",
+            np.ma.masked_equal(self.filtered_raw_matrix, -9.999),
+            "",
+            "Filtered raw counts",
+        )
+        self.fields["filtered_raw_matrix"]["data"].set_fill_value(0)
+        
     def _prep_data(self):
         self.fields = {}
 
@@ -150,32 +166,94 @@ class ArgonneParsivelReader(object):
             "Liquid water particle concentration",
         )
         self.fields["Nd"]["data"].set_fill_value(0)
-
+        
+        len_raw = len(self.raw)
+        self.fields["raw"] = var_to_dict(
+            "Raw",
+            np.reshape(np.array(self.raw), (len_raw, 32, 32)),
+            "",
+            "Raw data",
+        )
+        
         self.fields["num_particles"] = var_to_dict(
             "Number of Particles",
             np.ma.array(self.num_particles),
             "",
             "Number of particles",
         )
+        self.fields["num_particles_validated"] = var_to_dict(
+            "Number of Particles validated",
+            np.ma.array(self.num_particles_validated),
+            "",
+            "Number of particles validated",
+        )
+        self.fields["sensor_status"] = var_to_dict(
+            "Sensor status",
+            np.ma.array(self.sensor_status),
+            "See Chapter 12.1",
+            "Sensor status",
+        )
+        self.fields["error_code"] = var_to_dict(
+            "Error code",
+            np.ma.array(self.error_code),
+            "",
+            "Error code",
+        )
+        self.fields["power_supply_voltage"] = var_to_dict(
+            "Power supply voltage",
+            np.ma.array(self.power_supply_voltage),
+            "V",
+            "Power supply voltage",
+        )
+        self.fields["sensor_head_heating_current"] = var_to_dict(
+            "Sensor head heating current",
+            np.ma.array(self.sensor_head_heating_current),
+            "A",
+            "Sensor head heating current",
+        )
+        self.fields["sensor_heating_temperature"] = var_to_dict(
+            "Sensor heating temperature",
+            np.ma.array(self.sensor_head_heating_current),
+            "degC",
+            "Sensor heating temperature",
+        )
+        self.fields["temperature_right_head"] = var_to_dict(
+            "Temperature right head",
+            np.ma.array(self.temperature_right_head),
+            "K",
+            "Temperature right head",
+        )
+        self.fields["temperature_left_head"] = var_to_dict(
+            "Temperature right head",
+            np.ma.array(self.temperature_left_head),
+            "K",
+            "Temperature left head",
+        )
+        
         self.fields["terminal_velocity"] = var_to_dict(
             "Terminal Fall Velocity",
             np.array(
-                self.vd[0]
-            ),  # Should we do something different here? Don't think we want the time series.
+                self.vd
+            ),  
             "m/s",
             "Terminal fall velocity for each bin",
         )
+        self.fields["sensor_time"] = var_to_dict(
+            "Sensor time",
+            np.array(
+                self.sensor_time, dtype='datetime64[s]'
+            ), 
+            "",
+            "Sensor time",
+        )
 
-        try:
-            self.time = self._get_epoch_time()
-        except:
-            self.time = {
-                "data": np.array(self.time, dtype=float),
-                "units": None,
-                "title": "Time",
-                "full_name": "Native file time",
-            }
-            print("Conversion to Epoch Time did not work.")  
+        self.time = {
+            "data": np.array(self.time, dtype='datetime64[s]'),
+            "units": "seconds since 1970-1-1 00:00:00+0:00",
+            "title": "Time",
+            "full_name": "Native file time",
+        }
+            
 
     def _get_epoch_time(self):
         """
