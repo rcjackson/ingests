@@ -190,12 +190,13 @@ if __name__ == '__main__':
     wxt_global_UIC = {'conventions': "CF 1.10",
                       'WSN':'W096',
                       'site_ID' : "UIC",
-                      'CAMS_tag' : "CMS-WXT-",
+                      'CAMS_tag' : "CMS-WXT-006",
                       'datastream' : "CMS_wxt536_UIC_a1",
                       'plugin' : "registry.sagecontinuum.org/jrobrien/waggle-wxt536:0.*",
                       'datalevel' : "a1",
                       'latitude' : 41.869407936,
                       'longitude' : -87.645806251}
+
     wxt_global_CCI = {'conventions': "CF 1.10",
                       'WSN':'W08B',
                       'site_ID' : "NEIU_CCIS",
@@ -205,18 +206,39 @@ if __name__ == '__main__':
                       'datalevel' : "a1",
                       'latitude' : 41.823038311,
                       'longitude' : -87.609379028}
-    #put these in a dictionary for accessing
     
+    wxt_global_BIG = {'conventions': "CF 1.10",
+                      'WSN':'W0A0',
+                      'site_ID' : "BIG",
+                      'CAMS_tag' : "CMS-WXT-016",
+                      'datastream' : "CMS_wxt536_BIG_a1",
+                      'plugin' : "registry.sagecontinuum.org/jrobrien/waggle-wxt536:0.*",
+                      'datalevel' : "a1",
+                      'latitude' : 41.77702369,
+                      'longitude' : -87.609721059}
+
+    wxt_global_HUM = {'conventions': "CF 1.10",
+                      'WSN':'W0A1',
+                      'site_ID' : "HUM",
+                      'CAMS_tag' : "CMS-WXT-010",
+                      'datastream' : "CMS_wxt536_HUM_a1",
+                      'plugin' : "registry.sagecontinuum.org/jrobrien/waggle-wxt536:0.*",
+                      'datalevel' : "a1",
+                      'latitude' : 41.905513206,
+                      'longitude' : -87.703525713}
+    #put these in a dictionary for accessing
+
     global_sites = {'NU' : wxt_global_NU, 
                     'CSU': wxt_global_CSU,
                     'NEIU' : wxt_global_NEIU,
                     'ATMOS': wxt_global_ATMOS,
                     'UIC': wxt_global_UIC,
-                    'NEIU_CCICS': wxt_global_CCI}
-    
-    
+                    'NEIU_CCICS': wxt_global_CCI,
+                    "BIG": wxt_global_BIG,
+                    'HUM' : wxt_global_HUM}
+
     #Variable attributes
-    
+
     var_attrs_wxt = {'temperature': {'standard_name' : 'air_temperature',
                            'units' : 'celsius'},
                     'humidity': {'standard_name' : 'relative_humidity',

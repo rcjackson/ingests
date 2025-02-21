@@ -140,7 +140,7 @@ if __name__ == '__main__':
     
     aqt_global_NEIU = {'conventions': "CF 1.10",
                        'site_ID' : "NEIU",
-                      'CAMS_tag' : "CMS-WXT-004",
+                      'CAMS_tag' : "CMS-AQT-004",
                       'datastream' : "crocus_neiu_aqt_a1",
                       'datalevel' : "a1",
                        "plugin" : "registry.sagecontinuum.org/jrobrien/waggle-aqt:0.23.5.04",
@@ -151,7 +151,7 @@ if __name__ == '__main__':
     aqt_global_NU = {'conventions': "CF 1.10",
                       'WSN':'W099',
                       'site_ID' : "NU",
-                      'CAMS_tag' : "CMS-WXT-005",
+                      'CAMS_tag' : "CMS-AQT-003",
                       'datastream' : "crocus_nu_aqt_a1",
                       'plugin' : "registry.sagecontinuum.org/jrobrien/waggle-aqt:0.23.5.04",
                       'datalevel' : "a1",
@@ -181,12 +181,42 @@ if __name__ == '__main__':
     aqt_global_UIC = {'conventions': "CF 1.10",
                       'WSN':'W096',
                       'site_ID' : "UIC",
-                      'CAMS_tag' : "CMS-WXT-011",
+                      'CAMS_tag' : "CMS-AQT-",
                       'datastream' : "crocus_uic_aqt_a1",
-                      'plugin' : "10.31.81.1:5000/local/waggle-aqt:0.23.5.04",
+                      'plugin' : "registry.sagecontinuum.org/jrobrien/waggle-aqt:0.23.5.04",
                       'datalevel' : "a1",
                       'latitude' : 41.869407936,
                       'longitude' : -87.645806251}
+
+    aqt_global_CCI = {'conventions': "CF 1.10",
+                      'WSN':'W08B',
+                      'site_ID' : "NEIU_CCIS",
+                      'CAMS_tag' : "CMS-AQT-",
+                      'datastream' : "crocus_neiu_ccics_aqt_a1",
+                      'plugin' : "registry.sagecontinuum.org/jrobrien/waggle-aqt:0.23.5.04",
+                      'datalevel' : "a1",
+                      'latitude' : 41.823038311,
+                      'longitude' : -87.609379028}
+    
+    aqt_global_BIG = {'conventions': "CF 1.10",
+                      'WSN':'W0A0',
+                      'site_ID' : "BIG",
+                      'CAMS_tag' : "CMS-AQT-14",
+                      'datastream' : "crocus_big_aqt_a1",
+                      'plugin' : "registry.sagecontinuum.org/jrobrien/waggle-aqt:0.23.5.04",
+                      'datalevel' : "a1",
+                      'latitude' : 41.77702369,
+                      'longitude' : -87.609721059}
+
+    aqt_global_HUM = {'conventions': "CF 1.10",
+                      'WSN':'W0A1',
+                      'site_ID' : "HUM",
+                      'CAMS_tag' : "CMS-AQT-017",
+                      'datastream' : "crocus_hum_aqt_a1",
+                      'plugin' : "registry.sagecontinuum.org/jrobrien/waggle-aqt:0.23.5.04",
+                      'datalevel' : "a1",
+                      'latitude' : 41.905513206,
+                      'longitude' : -87.703525713}
     
     #put these in a dictionary for accessing
     
@@ -194,7 +224,10 @@ if __name__ == '__main__':
                     'CSU': aqt_global_CSU,
                     'NEIU' : aqt_global_NEIU,
                     'ATMOS': aqt_global_ATMOS,
-                    'UIC': aqt_global_UIC}
+                    'UIC': aqt_global_UIC,
+                    'NEIU_CCICS': aqt_global_CCI,
+                    'BIG': aqt_global_BIG,
+                    'HUM': aqt_global_HUM}
     
     
     #Variable attributes
