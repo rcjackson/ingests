@@ -218,6 +218,16 @@ if __name__ == '__main__':
                       'latitude' : 41.905513206,
                       'longitude' : -87.703525713}
     
+    aqt_global_DOWN = {'conventions': "CF 1.10",
+                      'WSN':'W09D',
+                      'site_ID' : "DOWN",
+                      'CAMS_tag' : "CMS-AQT-010",
+                      'datastream' : "crocus_down_aqt_a1",
+                      'plugin' : "registry.sagecontinuum.org/jrobrien/waggle-aqt:0.23.5.04",
+                      'datalevel' : "a1",
+                      'latitude' : 41.701476659,
+                      'longitude' : -87.9953044}
+    
     #put these in a dictionary for accessing
     
     global_sites = {'NU' : aqt_global_NU, 
@@ -227,7 +237,8 @@ if __name__ == '__main__':
                     'UIC': aqt_global_UIC,
                     'NEIU_CCICS': aqt_global_CCI,
                     'BIG': aqt_global_BIG,
-                    'HUM': aqt_global_HUM}
+                    'HUM': aqt_global_HUM,
+                    "DOWN": aqt_global_DOWN}
     
     
     #Variable attributes
