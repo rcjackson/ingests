@@ -226,6 +226,26 @@ if __name__ == '__main__':
                       'datalevel' : "a1",
                       'latitude' : 41.905513206,
                       'longitude' : -87.703525713}
+    
+    wxt_global_DOWN = {'conventions': "CF 1.10",
+                      'WSN':'W09D',
+                      'site_ID' : "DOWN",
+                      'CAMS_tag' : "CMS-WXT-008",
+                      'datastream' : "CMS_wxt536_DOWN_a1",
+                      'plugin' : "registry.sagecontinuum.org/jrobrien/waggle-wxt536:0.*",
+                      'datalevel' : "a1",
+                      'latitude' : 41.701476659,
+                      'longitude' : -87.9953044}
+    
+    wxt_global_SHEDD = {'conventions': "CF 1.10",
+                        'WSN':'W09E',
+                        'site_ID' : "SHEDD",
+                        'CAMS_tag' : "CMS-WXT-007",
+                        'datastream' : "CMS_wxt536_SHEDD_a1",
+                        'plugin' : "registry.sagecontinuum.org/jrobrien/waggle-wxt536:0.*",
+                        'datalevel' : "a1",
+                        'latitude' : 41.867918965,
+                        'longitude' : -87.613535027}
     #put these in a dictionary for accessing
 
     global_sites = {'NU' : wxt_global_NU, 
@@ -235,7 +255,9 @@ if __name__ == '__main__':
                     'UIC': wxt_global_UIC,
                     'NEIU_CCICS': wxt_global_CCI,
                     "BIG": wxt_global_BIG,
-                    'HUM' : wxt_global_HUM}
+                    'HUM': wxt_global_HUM,
+                    "DOWN": wxt_global_DOWN,
+                    "SHEDD": wxt_global_SHEDD}
 
     #Variable attributes
 
