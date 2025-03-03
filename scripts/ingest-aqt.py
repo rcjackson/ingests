@@ -228,6 +228,16 @@ if __name__ == '__main__':
                       'latitude' : 41.701476659,
                       'longitude' : -87.9953044}
     
+    aqt_global_SHEDD = {'conventions': "CF 1.10",
+                        'WSN':'W09E',
+                        'site_ID' : "SHEDD",
+                        'CAMS_tag' : "CMS-AQT-019",
+                        'datastream' : "crocus_shedd_aqt_a1",
+                        'plugin' : "registry.sagecontinuum.org/jrobrien/waggle-aqt:0.23.5.04",
+                        'datalevel' : "a1",
+                        'latitude' : 41.867918965,
+                        'longitude' : -87.613535027}
+    
     #put these in a dictionary for accessing
     
     global_sites = {'NU' : aqt_global_NU, 
@@ -238,11 +248,11 @@ if __name__ == '__main__':
                     'NEIU_CCICS': aqt_global_CCI,
                     'BIG': aqt_global_BIG,
                     'HUM': aqt_global_HUM,
-                    "DOWN": aqt_global_DOWN}
-    
+                    "DOWN": aqt_global_DOWN,
+                    "SHEDD": aqt_global_SHEDD}
     
     #Variable attributes
-    
+
     var_attrs_aqt = {'pm2.5' : {'standard_name' : 'mole_concentration_of_pm2p5_ambient_aerosol_particles_in_air',
                                 'units' : 'ug/m^3'},
                     'pm10.0' : {'standard_name' : 'mole_concentration_of_pm10p0_ambient_aerosol_particles_in_air',
