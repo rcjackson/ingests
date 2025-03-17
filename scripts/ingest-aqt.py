@@ -238,6 +238,16 @@ if __name__ == '__main__':
                         'latitude' : 41.867918965,
                         'longitude' : -87.613535027}
     
+    aqt_global_VLPK = {'conventions': "CF 1.10",
+                       'WSN':'W095',
+                       'site_ID' : "VLPK",
+                       'CAMS_tag' : "CMS-AQT-008",
+                       'datastream' : "crocus_vlpk_aqt_a1",
+                       'plugin' : "registry.sagecontinuum.org/jrobrien/waggle-aqt:0.23.5.04",
+                       'datalevel' : "a1",
+                       'latitude' : 41.884884633,
+                       'longitude' : -87.978717410}
+    
     #put these in a dictionary for accessing
     
     global_sites = {'NU' : aqt_global_NU, 
@@ -249,7 +259,8 @@ if __name__ == '__main__':
                     'BIG': aqt_global_BIG,
                     'HUM': aqt_global_HUM,
                     "DOWN": aqt_global_DOWN,
-                    "SHEDD": aqt_global_SHEDD}
+                    "SHEDD": aqt_global_SHEDD,
+                    "VLPK": aqt_globa_VLPK}
     
     #Variable attributes
 
