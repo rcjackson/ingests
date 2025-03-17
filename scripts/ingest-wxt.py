@@ -246,6 +246,16 @@ if __name__ == '__main__':
                         'datalevel' : "a1",
                         'latitude' : 41.867918965,
                         'longitude' : -87.613535027}
+    
+    wxt_global_VLPK = {'conventions': "CF 1.10",
+                       'WSN':'W095',
+                       'site_ID' : "VLPK",
+                       'CAMS_tag' : "CMS-WXT-004",
+                       'datastream' : "CMS_wxt536_VLPK_a1",
+                       'plugin' : "registry.sagecontinuum.org/jrobrien/waggle-wxt536:0.*",
+                       'datalevel' : "a1",
+                       'latitude' : 41.884884633,
+                       'longitude' : -87.978717410}
     #put these in a dictionary for accessing
 
     global_sites = {'NU' : wxt_global_NU, 
@@ -257,7 +267,8 @@ if __name__ == '__main__':
                     "BIG": wxt_global_BIG,
                     'HUM': wxt_global_HUM,
                     "DOWN": wxt_global_DOWN,
-                    "SHEDD": wxt_global_SHEDD}
+                    "SHEDD": wxt_global_SHEDD,
+                    "VLPK": wxt_global_VLPK}
 
     #Variable attributes
 
