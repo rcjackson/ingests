@@ -260,7 +260,7 @@ if __name__ == '__main__':
                     'HUM': aqt_global_HUM,
                     "DOWN": aqt_global_DOWN,
                     "SHEDD": aqt_global_SHEDD,
-                    "VLPK": aqt_globa_VLPK}
+                    "VLPK": aqt_global_VLPK}
     
     #Variable attributes
 
