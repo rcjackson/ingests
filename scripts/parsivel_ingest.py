@@ -10,6 +10,35 @@ from netCDF4 import num2date, date2num
 from ArgonneParsivelReader import read_adm_parsivel
 from datetime import datetime, timedelta
 
+def calculate_dsd_from_spectrum(dsd, effective_sampling_area=None, replace=True):
+    """ Calculate N(D) from the drop spectrum based on the effective sampling area.
+    Updates the entry for ND in fields.
+    Requires that drop_spectrum be present in fields, and that the dsd has spectrum_fall_velocity defined.
+    
+    Parameters
+    ----------
+    effective_sampling_area: function 
+        Function that returns the effective sampling area as a function of diameter. Optionally
+        a array with effective sampling area matched to diameter dimension can be provided as an array.
+    replace: boolean
+        Whether to replace Nd with the newly calculated one. If true, no return value to save memory.
+    """
+
+    D = dsd.diameter["data"]
+    A = pydsd.utility.filter.parsivel_sampling_area(D) * 1e-6
+
+    delta_t = np.mean(np.diff(dsd.time["data"][0:4])).astype(float)  # Sampling time in seconds
+    velocity = dsd.spectrum_fall_velocity["data"]
+    nd = dsd.fields["drop_spectrum"]["data"].sum(axis=1)
+    spread = dsd.spread["data"]
+    
+    if replace:
+        dsd.fields["Nd"]["data"] = nd / (velocity * A * spread * delta_t)
+        dsd.fields["Nd"]["source"] = "Calculated from spectrum."
+    else:
+        return nd / (velocity * A * spread * delta_t)
+
+
 def filter_spectrum_with_parsivel_matrix(
     dsd,
     over_fall_speed=0.5,
@@ -120,7 +149,7 @@ def process_parsivel(day, radar_frequency=None, node="W09A", username="", passwo
             print("Empty file, skipping.")
             continue
         
-        my_dsd.Nd["data"] = np.where(my_dsd.Nd["data"] == -9.999, np.nan,
+        my_dsd.Nd["data"] = np.where(my_dsd.Nd["data"] == 10**-9.999, np.nan,
                 my_dsd.Nd["data"])
      
         my_dsd.calculate_dsd_parameterization()
@@ -146,8 +175,18 @@ def process_parsivel(day, radar_frequency=None, node="W09A", username="", passwo
         out_ds["rain_rate"].attrs = my_dsd.rain_rate
         
         if radar_frequency is not None:
+            # Filter the size distributions
+            my_dsd.fields["drop_spectrum"] = my_dsd.fields["filtered_raw_matrix"]
+            #my_dsd.fields["drop_spectrum"]["data"] = my_dsd.fields["drop_spectrum"]["data"].sum(axis=2)
+            my_dsd.fields["Nd"]["data"] = calculate_dsd_from_spectrum(my_dsd, replace=False)
+            my_dsd.fields["Nd"]["data"] = np.where(my_dsd.fields["Nd"]["data"] < 1e-9, 0, 
+                                                   my_dsd.fields["Nd"]["data"])
+            out_ds["Nd"] = (['time', 'bins'], my_dsd.Nd["data"])
+            out_ds["Nd"].attrs = my_dsd.Nd
+            del out_ds["Nd"].attrs["data"]
+            my_dsd.calculate_dsd_parameterization()
             my_dsd.set_scattering_temperature_and_frequency(
-                    scattering_freq=radar_frequency)
+                    scattering_freq=radar_frequency*1e9)
             my_dsd.calculate_radar_parameters()
             print("Scattering done")
             params_list = ["Zh", "Zdr", "delta_co", "Kdp",
@@ -160,6 +199,8 @@ def process_parsivel(day, radar_frequency=None, node="W09A", username="", passwo
             for param in params_list:
                 out_ds[param] = (['time'], my_dsd.fields[param]["data"])
                 out_ds[param].attrs = my_dsd.fields[param]
+                if param == "Zh":
+                    print(my_dsd.fields[param]["data"])
                 del out_ds[param].attrs["data"]
         else:
             params_list = ["D0", "Dmax", "Dm", "Nt", "Nw",
@@ -199,7 +240,7 @@ if __name__ == "__main__":
     parser.add_argument('--output_path', default=os.getcwd(), help='Path to output directory')
     parser.add_argument('--node', default="W09A", help='Waggle node number containing data')
     parser.add_argument('--frequency', default=None,
-                         help="Radar frequency for generating radar moments." + 
+                         help="Radar frequency [GHz] for generating radar moments." + 
                               "This will make the data level b1 instead of a1.")
     parser.add_argument('--waggle_username', default="", 
                         help='Waggle username.')
@@ -209,7 +250,7 @@ if __name__ == "__main__":
     day = datetime.strptime(args.date, '%Y%m%d')
     username = args.waggle_username
     password = args.waggle_password
-    out_ds = process_parsivel(day, args.frequency, args.node, username, password)
+    out_ds = process_parsivel(day, float(args.frequency), args.node, username, password)
     
     if args.frequency is None:
         data_level = "a1"
