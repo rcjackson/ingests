@@ -147,7 +147,7 @@ def process_parsivel(day, radar_frequency=None, node="W09A", username="", passwo
         
         if radar_frequency is not None:
             my_dsd.set_scattering_temperature_and_frequency(
-                    scattering_freq=radar_frequency)
+                    scattering_freq=float(radar_frequency))
             my_dsd.calculate_radar_parameters()
             print("Scattering done")
             params_list = ["Zh", "Zdr", "delta_co", "Kdp",
